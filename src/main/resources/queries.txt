@@ -1,0 +1,5 @@
+select epl where Goals > 2
+select epl or liga where Goals > 2 and Goals < 5 and Assists > 0.1
+select epl where Matches != 2 and Matches != 4 and Matches != 6 and PKAttempts > 0
+select epl or liga where Goals > 5 and Goals <= 6 and Minutes >= 1245
+select liga where Goals = 12 and OwnGoals > 0
