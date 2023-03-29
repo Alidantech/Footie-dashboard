@@ -19,14 +19,29 @@ public class PlayerDashboardPanel extends AbstractPlayerDashboardPanel
 
     @Override
     public void populatePlayerDetailsComboBoxes() {
-        // TODO remove code below and implement, the comboboxes should be dynamically updated based
+        //TODO remove code below and implement, the comboboxes should be dynamically updated based
         // on user actions
-        playerNamesList.add("Player 1");
-        playerNamesList.add("Player 2");
-        playerNamesList.add("Player 3");
-        DefaultComboBoxModel<String> model = (DefaultComboBoxModel<String>) comboPlayerNames.getModel();
+
+        //THE NAME COMBOBOX
+        playerNamesList.addAll();
+        DefaultComboBoxModel<String> namesModel = (DefaultComboBoxModel<String>) comboPlayerNames.getModel();
         playerNamesList.add(0,"");
-        model.addAll(playerNamesList);
+        namesModel.addAll(playerNamesList);
+
+        //THE NATION COMBOBOX
+        DefaultComboBoxModel<String> nationModel = (DefaultComboBoxModel<String>) comboNations.getModel();
+        nationList.add(0,"");
+        nationModel.addAll(nationList);
+
+        //THE POSITION COMBOBOX
+        DefaultComboBoxModel<String> positionModel = (DefaultComboBoxModel<String>) comboPositions.getModel();
+        positionList.add(0,"");
+        positionModel.addAll(positionList);
+
+        //THE TEAM COMBOBOX
+        DefaultComboBoxModel<String> teamModel = (DefaultComboBoxModel<String>) comboTeams.getModel();
+        teamList.add(0,"");
+        teamModel.addAll(teamList);
     }
 
     /**
