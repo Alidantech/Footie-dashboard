@@ -14,6 +14,7 @@ public class PlayerCatalog extends AbstractPlayerCatalog
      */
     public PlayerCatalog(String eplFilename, String ligaFilename) {
         super(eplFilename, ligaFilename);
+
     }
 
     @Override
@@ -26,7 +27,8 @@ public class PlayerCatalog extends AbstractPlayerCatalog
     @Override
     public void updatePlayerCatalog() {
         // TODO delete next line and implement
-        playerEntriesMap.put(League.ALL, new ArrayList<>());
+       playerEntriesMap.put(League.ALL, new ArrayList<>());
+        
     }
 
     @Override

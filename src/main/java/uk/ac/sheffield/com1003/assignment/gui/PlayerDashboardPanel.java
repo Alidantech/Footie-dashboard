@@ -1,8 +1,10 @@
 package uk.ac.sheffield.com1003.assignment.gui;
-
 import uk.ac.sheffield.com1003.assignment.codeprovided.*;
+import uk.ac.sheffield.com1003.assignment.codeprovided.AbstractPlayerCatalog;
 import uk.ac.sheffield.com1003.assignment.codeprovided.gui.AbstractPlayerDashboardPanel;
-
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.*;
 import javax.swing.*;
 
 /**
@@ -11,7 +13,6 @@ import javax.swing.*;
 
 public class PlayerDashboardPanel extends AbstractPlayerDashboardPanel
 {
-
     // Constructor
     public PlayerDashboardPanel(AbstractPlayerCatalog playerCatalog) {
         super(playerCatalog);
@@ -21,9 +22,12 @@ public class PlayerDashboardPanel extends AbstractPlayerDashboardPanel
     public void populatePlayerDetailsComboBoxes() {
         //TODO remove code below and implement, the comboboxes should be dynamically updated based
         // on user actions
+        //THE LEAGUE COMBOBOX
+
+
 
         //THE NAME COMBOBOX
-        playerNamesList.addAll();
+        //playerNamesList.addAll();
         DefaultComboBoxModel<String> namesModel = (DefaultComboBoxModel<String>) comboPlayerNames.getModel();
         playerNamesList.add(0,"");
         namesModel.addAll(playerNamesList);
@@ -50,9 +54,23 @@ public class PlayerDashboardPanel extends AbstractPlayerDashboardPanel
     @SuppressWarnings("unused")
     @Override
     public void addListeners() {
+        //create an instance of the class to recieve the user actions data
         // TODO implement
+        //THE LEAGUE COMBOBOX (event) when a user selects a league 
+        comboLeagueTypes.addActionListener(new ActionListener() {
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    // Code to be executed when a user selects an item in the combo box
+                    String selectedLeague = (String) comboLeagueTypes.getSelectedItem();
+                    League myLeague = League.fromName(selectedLeague);
+                    
+                    //pass the selected list to the data class.
+                }              
+        });
 
     }
+    
 
     /**
      * clearFilters method - clears all filters from the subQueryList ArrayList and updates
