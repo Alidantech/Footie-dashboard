@@ -123,7 +123,7 @@ public class FootieDashboard {
 			System.out.println(query.toString() + ":");
 			List<PlayerEntry> queryResults = query.executeQuery(playerCatalog);
 			printPlayerEntries(queryResults);
-			System.out.println();
+			System.out.println(queryResults);
 		}
 	}
 
@@ -132,13 +132,14 @@ public class FootieDashboard {
 	 * @param playerEntries the player entries to display
 	 */
 	private void printPlayerEntries(Collection<PlayerEntry> playerEntries) {
-		// TODO Please, limit here the number of player entries shown via console to 5
 		int i = 0;
-		for (PlayerEntry w : playerEntries) {
-			System.out.println(w.toString());
-			i++;
-			if (i > 5) return;
-		}
+    for (PlayerEntry w : playerEntries) {
+        System.out.println(w.toString());
+        i++;
+        if (i >= 5) {
+            break;
+        }
+    }
 	}
 
 	private void printFirstFivePlayerEntries() {
@@ -158,4 +159,5 @@ public class FootieDashboard {
 		PlayerEntryDashboard playerDashboard = new PlayerEntryDashboard(browserPanel);
 		playerDashboard.setVisible(true);
 	}
+
 }
