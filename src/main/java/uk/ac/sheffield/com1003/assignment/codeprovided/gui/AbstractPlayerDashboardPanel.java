@@ -46,7 +46,7 @@ public abstract class AbstractPlayerDashboardPanel extends JPanel {
     // TODO, update explanation
     // subQueryList contains all the conditions as they are added when the button buttonAddFilter is clicked
     // the contents of subQueryList will need to be cleared if the buttonClearFilters is clicked
-    protected List<SubQuery> subQueryList = new ArrayList<>();
+    public static List<SubQuery> subQueryList = new ArrayList<>();
 
     // by default all player entries for both leagues are used
     protected League selectedLeagueType = League.ALL;

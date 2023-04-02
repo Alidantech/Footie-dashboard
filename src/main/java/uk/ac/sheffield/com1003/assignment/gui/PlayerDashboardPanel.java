@@ -1,12 +1,14 @@
 package uk.ac.sheffield.com1003.assignment.gui;
+import uk.ac.sheffield.com1003.assignment.QueryParser;
 import uk.ac.sheffield.com1003.assignment.codeprovided.*;
 import uk.ac.sheffield.com1003.assignment.codeprovided.gui.AbstractPlayerDashboardPanel;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
 
 
 import javax.swing.*;
@@ -22,25 +24,26 @@ public class PlayerDashboardPanel extends AbstractPlayerDashboardPanel
         super(playerCatalog);
     }
     //instace variables
-    
-    List<SubQuery> subQueryList = new ArrayList<>();
+    public static List<PlayerEntry> datalist;
+    String userQueryString;
+    List<PlayerProperty> category;
+    String selectedCartegory;
     String selectedLeague = (String) comboLeagueTypes.getSelectedItem();
     String selectedName = (String) comboPlayerNames.getSelectedItem();
     String selectedNation = (String) comboNations.getSelectedItem();
     String selectedPosition = (String) comboPositions.getSelectedItem();
     String SelectedTeam = (String) comboTeams.getSelectedItem();
     League myLeague = League.fromName(selectedLeague);
-    List<PlayerEntry> playerEntries = playerCatalog.getPlayerEntriesList(myLeague);
-    List<PlayerEntry> datalist = playerCatalog.getPlayerEntriesList(myLeague);
+    boolean minimumChecked = false;
+    boolean maximumChecked = false;
+    boolean averageChecked = false;
+
+    
 
     @Override
     public void populatePlayerDetailsComboBoxes() {
-        myLeague = League.ALL;
         datalist = playerCatalog.getPlayerEntriesList(League.ALL);
-       // DONE remove code below and implement, the comboboxes should be dynamically updated based
-        getPlayerDetails(League.ALL);
-        updatePlayerCatalogDetailsBox();
-        updateStatistics();
+        datalist = getPlayerDetails(League.ALL);
         playerNamesList.add(0,"");
         DefaultComboBoxModel<String> namesModel = (DefaultComboBoxModel<String>) comboPlayerNames.getModel();
         namesModel.addAll(playerNamesList);
@@ -80,33 +83,117 @@ public class PlayerDashboardPanel extends AbstractPlayerDashboardPanel
                 updateStatistics(); 
             }
         });
-     
-        //add event listeners for the buttons
+        comboPlayerNames.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                selectedName = (String) comboPlayerNames.getSelectedItem();
+                if (selectedName != null) {           
+                    //datalist = newPlayersList(selectedName);
+                    datalist = playerCatalog
+                    .getPlayerEntriesList(filteredPlayerEntriesList, PlayerDetail.PLAYER, selectedName);
 
+                    updatePlayerCatalogDetailsBox();
+                    updateStatistics(); 
+                }
+            }
+        });
+        comboNations.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                selectedNation = (String) comboNations.getSelectedItem();
+                if (selectedNation != null) {           
+                   // datalist = newPlayersList(selectedNation);
+                   datalist = playerCatalog
+                   .getPlayerEntriesList(filteredPlayerEntriesList, PlayerDetail.NATION, selectedNation);
+                    updatePlayerCatalogDetailsBox();
+                    updateStatistics(); 
+                }
+            }
+        });
+        comboPositions.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                selectedPosition = (String) comboPositions.getSelectedItem();
+                if (selectedPosition != null) {           
+                    //datalist = newPlayersList(selectedPosition);
+                    datalist = playerCatalog
+                    .getPlayerEntriesList(filteredPlayerEntriesList, PlayerDetail.POSITION, selectedPosition);
+                    updatePlayerCatalogDetailsBox();
+                    updateStatistics(); 
+                }
+            }
+        });
+        comboTeams.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                selectedTeam = (String) comboTeams.getSelectedItem();
+                if (selectedTeam != null) {           
+                   // datalist = newPlayersList(selectedTeam);
+                   datalist = playerCatalog
+                   .getPlayerEntriesList(filteredPlayerEntriesList, PlayerDetail.TEAM, selectedTeam);
+                    updatePlayerCatalogDetailsBox();
+                    updateStatistics(); 
+                }
+            }
+        });
+  
+        //add event listeners for the buttons
         buttonAddFilter.addActionListener(new ActionListener() {
 
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            
-            addFilter();
-            buttonAddFilter.setBackground(Color.GREEN);
-            buttonClearFilters.setBackground(Color.GRAY);
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
+                addFilter();
 
-        }              
+            }              
         });
-
 
         buttonClearFilters.addActionListener(new ActionListener() {
 
-        @Override
-        public void actionPerformed(ActionEvent e) {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+               
+                clearFilters();
+                
+            }              
+        });
+       
+        minCheckBox.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                minimumChecked = true;
+              
+                 
+                updateRadarChart();
+            } else{
+                minimumChecked = false;
+            }
+        });
 
-            buttonAddFilter.setBackground(Color.gray);
-            buttonClearFilters.setBackground(Color.RED);
+        maxCheckBox.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                maximumChecked = true;
+                updateRadarChart();
 
-            
-        }              
-         });
+            } else{
+                maximumChecked = false;
+            }
+        });
+
+        averageCheckBox.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                averageChecked = true; 
+                updateRadarChart();
+            } else{
+                averageChecked = false; 
+            }
+        });
+
+        comboRadarChartCategories.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                selectedCartegory = (String) comboRadarChartCategories.getSelectedItem();
+                PlayerProperty[] newCartegory = Category.getCategoryFromName(selectedCartegory).getProperties();
+                category = new ArrayList<>();
+               category.addAll(Arrays.asList(newCartegory));
+                updateRadarChart();
+            }
+        });
+  
     }
     /**
      * clearFilters method - clears all filters from the subQueryList ArrayList and updates
@@ -114,15 +201,14 @@ public class PlayerDashboardPanel extends AbstractPlayerDashboardPanel
      */
     @Override
     public void clearFilters() {
-        
         subQueryList.clear();
-
+        subQueriesTextArea.setText("");
     }
 
     @Override
     public void updateRadarChart() {
-        // TODO implement
-
+        new RadarChart(playerCatalog, datalist, category);
+        System.out.println(category);
     }
 
     /**
@@ -132,18 +218,19 @@ public class PlayerDashboardPanel extends AbstractPlayerDashboardPanel
     @Override
     public void updateStatistics() {
 
-        // Print the property headers in the first column
+        statisticsTextArea.setText("");
         statisticsTextArea.append(String.format("%-55s %-55s %-55s %-55s\n", "Property","Maximum", "Average", "Minimum"));
-        // Print the property headers in the first row
+
         for (PlayerProperty property : PlayerProperty.values()) {
+
             statisticsTextArea.append(String.format("%-55s", property.getName()));
             double maxValue = playerCatalog.getMaximumValue(property, datalist);
             double avgValue = playerCatalog.getMeanAverageValue(property, datalist);
             double minValue = playerCatalog.getMinimumValue(property, datalist);
             statisticsTextArea.append(String.format("%-55s %-55s %-55s\n", String.format("%.2f", maxValue),
                     String.format("%.2f", avgValue), String.format("%.2f", minValue)));
+
         }
-            
     }
 
     /**
@@ -151,7 +238,7 @@ public class PlayerDashboardPanel extends AbstractPlayerDashboardPanel
      */
     @Override
     public void updatePlayerCatalogDetailsBox() {
-
+        filteredPlayerEntriesTextArea.setText("");
         filteredPlayerEntriesTextArea.append(String.format("%-16s %-26s %-34s %-38s %-32s %-34s",
                 "ID", "League Type", "Player's Name", "Nation", "Position", "Team"));
         for (PlayerProperty property : PlayerProperty.values()) {
@@ -181,7 +268,11 @@ public class PlayerDashboardPanel extends AbstractPlayerDashboardPanel
     @Override
     public void executeQuery() {
         // TODO implement
-
+        QueryParser queryParser = new QueryParser();
+        List<String> queryList = new ArrayList<>();
+        queryList.clear();
+        queryList.add(userQueryString);
+        queryParser.readQueries(queryList);
     }
 
     /**
@@ -189,39 +280,48 @@ public class PlayerDashboardPanel extends AbstractPlayerDashboardPanel
      */
     @Override
     public void addFilter() {
-        //QueryParser queryParser = new QueryParser();
-        System.out.println(myLeague);
-        // String 
         String selectedProperty = (String) comboQueryProperties.getSelectedItem();
         String operator = (String) comboOperators.getSelectedItem();
-        double Value = Double.parseDouble(value.getText());
-        PlayerProperty property = PlayerProperty.fromPropertyName(selectedProperty);
+        // try{
+            double Value = Double.parseDouble(value.getText());
 
-        // Create a new SubQuery object for the selected property, operator, and value
-        SubQuery subQuery = new SubQuery(property, operator, Value);
-        
-        // Add the SubQuery object to the list
-        subQueryList.add(subQuery);
-        System.out.println(subQueryList);
-        String updatedText =  subQueryList + ",   ";
-        subQueriesTextArea.append(updatedText);
-        new  Query(subQueryList, myLeague);
+            PlayerProperty property = PlayerProperty.fromPropertyName(selectedProperty);
+    
+            // Create a new SubQuery object for the selected property, operator, and value
+            SubQuery subQuery = new SubQuery(property, operator, Value);
+            subQueryList.add(subQuery);
+          String queryString = subQueryList+"";
+          queryString = QueryParser.generateQuery(queryString);
+          
+          subQueriesTextArea.setText(queryString);
+        // }catch(Exception e){
+        //     JOptionPane.showMessageDialog(null, "Invalid input. Please enter a valid number.",
+        //                                   "Error", JOptionPane.ERROR_MESSAGE);
+        // }
+       
     }
+
     @Override
     public boolean isMinCheckBoxSelected() {
-        // TODO implement
+        if(minimumChecked){
+            return true;
+        }
         return false;
     }
 
     @Override
     public boolean isMaxCheckBoxSelected() {
-        // TODO implement
+        if(maximumChecked){
+            return true;
+        }
         return false;
     }
 
     @Override
     public boolean isAverageCheckBoxSelected() {
-        // TODO implement
+        if(averageChecked){
+            return true;
+        }
         return false;
     }
 
@@ -231,53 +331,36 @@ public class PlayerDashboardPanel extends AbstractPlayerDashboardPanel
      * the comboboxes
      */
     public List<PlayerEntry> getPlayerDetails(League league){
-        statisticsTextArea.setText("");
-        filteredPlayerEntriesTextArea.setText("");
         //clear all the lists then update them
-        List<String> namesList = new ArrayList<String>();
-        namesList.clear();
-        List<String> nationsList = new ArrayList<String>();
-        namesList.clear();
-        List<String> positionsList = new ArrayList<String>();
-        namesList.clear();
-        List<String> teamsList = new ArrayList<String>();
-        namesList.clear();
-
+        List<String> namesList = new ArrayList<String>();namesList.clear();
+        List<String> nationsList = new ArrayList<String>();namesList.clear();
+        List<String> positionsList = new ArrayList<String>();namesList.clear();
+        List<String> teamsList = new ArrayList<String>();namesList.clear();
+        
         for (PlayerEntry playerEntry : datalist) {
-
             String playerName = playerEntry.getPlayerName();
             namesList.add(playerName);
 
-
             String playerNation = playerEntry.getNation();
-           
-            //select only unique nations names
             if (!nationsList.contains(playerNation)) {
                 nationsList.add(playerNation);
             }
 
             String playerPosition = playerEntry.getPosition();
-
-            //select only unique positions names
             if (!positionsList.contains(playerPosition)) {
                 positionsList.add(playerPosition);
             }
-           
-            
+
             String playerTeam = playerEntry.getTeam();
-            
-            //select only unique team names
             if (!teamsList.contains(playerTeam)) {
                 teamsList.add(playerTeam);
             }
-           
         }
         updateNamesComboBox(namesList);
         updateNationsComboBox(nationsList);
         updatePositionsComboBox(positionsList);
         updateTeamsComboBox(teamsList);
         return datalist;
-        
     }
 
 
@@ -317,4 +400,9 @@ public class PlayerDashboardPanel extends AbstractPlayerDashboardPanel
         teamModel.addAll(newList);
     }
 
+    public void styleGUIComponents() {
+       
+
+    }
+    
 }

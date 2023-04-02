@@ -132,4 +132,8 @@ public class SubQuery
 	public static boolean isValidOperator(String operatorToCheck) {
 		return Arrays.asList(VALID_OPERATORS).contains(operatorToCheck);
 	}
+
+    public String[] split(String string) {
+        return null;
+    }
 }

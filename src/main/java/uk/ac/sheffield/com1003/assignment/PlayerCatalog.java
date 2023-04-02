@@ -8,6 +8,8 @@ import java.util.*;
  */
 public class PlayerCatalog extends AbstractPlayerCatalog
 {
+    public static String eplFilename;
+
     /**
      * Constructor
      */
@@ -18,7 +20,7 @@ public class PlayerCatalog extends AbstractPlayerCatalog
 
     @Override
     public PlayerPropertyMap parsePlayerEntryLine(String line) throws IllegalArgumentException
-    {
+    { 
         String[] tokens = line.split(",");
 
         if (tokens.length != PlayerDetail.values().length + PlayerProperty.values().length) {
@@ -53,7 +55,7 @@ public class PlayerCatalog extends AbstractPlayerCatalog
             allEntries.addAll(entries);
         }
         playerEntriesMap.put(League.ALL, allEntries);
-       // System.out.println(allEntries);
+      
     }
 
     @Override
