@@ -1,6 +1,7 @@
 package uk.ac.sheffield.com1003.assignment.gui;
-import uk.ac.sheffield.com1003.assignment.QueryParser;
 import uk.ac.sheffield.com1003.assignment.codeprovided.*;
+import uk.ac.sheffield.com1003.assignment.codeprovided.Query;
+
 import uk.ac.sheffield.com1003.assignment.codeprovided.gui.AbstractPlayerDashboardPanel;
 
 import java.util.ArrayList;
@@ -9,8 +10,6 @@ import java.util.List;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
-
-
 import javax.swing.*;
 
 /**
@@ -81,6 +80,7 @@ public class PlayerDashboardPanel extends AbstractPlayerDashboardPanel
         
                 updatePlayerCatalogDetailsBox();
                 updateStatistics(); 
+                updateRadarChart();
             }
         });
         comboPlayerNames.addItemListener(e -> {
@@ -93,6 +93,7 @@ public class PlayerDashboardPanel extends AbstractPlayerDashboardPanel
 
                     updatePlayerCatalogDetailsBox();
                     updateStatistics(); 
+                    updateRadarChart();
                 }
             }
         });
@@ -105,6 +106,7 @@ public class PlayerDashboardPanel extends AbstractPlayerDashboardPanel
                    .getPlayerEntriesList(filteredPlayerEntriesList, PlayerDetail.NATION, selectedNation);
                     updatePlayerCatalogDetailsBox();
                     updateStatistics(); 
+                    updateRadarChart();
                 }
             }
         });
@@ -117,6 +119,7 @@ public class PlayerDashboardPanel extends AbstractPlayerDashboardPanel
                     .getPlayerEntriesList(filteredPlayerEntriesList, PlayerDetail.POSITION, selectedPosition);
                     updatePlayerCatalogDetailsBox();
                     updateStatistics(); 
+                    updateRadarChart();
                 }
             }
         });
@@ -129,6 +132,7 @@ public class PlayerDashboardPanel extends AbstractPlayerDashboardPanel
                    .getPlayerEntriesList(filteredPlayerEntriesList, PlayerDetail.TEAM, selectedTeam);
                     updatePlayerCatalogDetailsBox();
                     updateStatistics(); 
+                   updateRadarChart();
                 }
             }
         });
@@ -140,6 +144,7 @@ public class PlayerDashboardPanel extends AbstractPlayerDashboardPanel
             public void actionPerformed(ActionEvent e) {
                 
                 addFilter();
+                updateRadarChart();
 
             }              
         });
@@ -150,7 +155,7 @@ public class PlayerDashboardPanel extends AbstractPlayerDashboardPanel
             public void actionPerformed(ActionEvent e) {
                
                 clearFilters();
-                
+                updateRadarChart();
             }              
         });
        
@@ -207,8 +212,9 @@ public class PlayerDashboardPanel extends AbstractPlayerDashboardPanel
 
     @Override
     public void updateRadarChart() {
-        new RadarChart(playerCatalog, datalist, category);
-        System.out.println(category);
+        RadarChart radarChart = new RadarChart(playerCatalog, datalist, category);
+        RadarChartPanel radarChartPanel = new RadarChartPanel(this, radarChart);
+        radarChartPanel.repaintPanel();
     }
 
     /**
@@ -267,12 +273,10 @@ public class PlayerDashboardPanel extends AbstractPlayerDashboardPanel
      */
     @Override
     public void executeQuery() {
-        // TODO implement
-        QueryParser queryParser = new QueryParser();
-        List<String> queryList = new ArrayList<>();
-        queryList.clear();
-        queryList.add(userQueryString);
-        queryParser.readQueries(queryList);
+        
+      
+      
+        
     }
 
     /**
@@ -282,7 +286,7 @@ public class PlayerDashboardPanel extends AbstractPlayerDashboardPanel
     public void addFilter() {
         String selectedProperty = (String) comboQueryProperties.getSelectedItem();
         String operator = (String) comboOperators.getSelectedItem();
-        // try{
+        try{
             double Value = Double.parseDouble(value.getText());
 
             PlayerProperty property = PlayerProperty.fromPropertyName(selectedProperty);
@@ -290,14 +294,13 @@ public class PlayerDashboardPanel extends AbstractPlayerDashboardPanel
             // Create a new SubQuery object for the selected property, operator, and value
             SubQuery subQuery = new SubQuery(property, operator, Value);
             subQueryList.add(subQuery);
-          String queryString = subQueryList+"";
-          queryString = QueryParser.generateQuery(queryString);
-          
-          subQueriesTextArea.setText(queryString);
-        // }catch(Exception e){
-        //     JOptionPane.showMessageDialog(null, "Invalid input. Please enter a valid number.",
-        //                                   "Error", JOptionPane.ERROR_MESSAGE);
-        // }
+            Query query = new Query(subQueryList, myLeague);
+            subQueriesTextArea.setText(subQueryList+"  ");
+            System.out.println(query);
+         }catch(Exception e){
+            JOptionPane.showMessageDialog(null, "Invalid input. Please enter a valid number.",
+                                          "Error", JOptionPane.ERROR_MESSAGE);
+        }
        
     }
 

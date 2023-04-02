@@ -9,7 +9,6 @@ import uk.ac.sheffield.com1003.assignment.codeprovided.PlayerEntry;
 import uk.ac.sheffield.com1003.assignment.codeprovided.PlayerProperty;
 import uk.ac.sheffield.com1003.assignment.codeprovided.gui.AbstractPlayerDashboardPanel;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.awt.*;
@@ -20,23 +19,18 @@ import java.awt.*;
 
 public class RadarChartPanel extends AbstractRadarChartPanel
 {
+   
+   
 
     List<PlayerEntry> filteredPlayerEntriesList;
     List<PlayerProperty> playerRadarChartProperties;
-    Map<PlayerProperty, RadarAxisValues> map;
+   public static  Map<PlayerProperty, RadarAxisValues> map;
     public RadarChartPanel(AbstractPlayerDashboardPanel parentPanel, AbstractRadarChart radarPlot) {
         super(parentPanel, radarPlot);
-    if (radarPlot != null) {
         map = radarPlot.getRadarPlotAxesValues();
         playerRadarChartProperties = radarPlot.getPlayerRadarChartProperties();
         filteredPlayerEntriesList = radarPlot.getFilteredPlayerEntries();
-        setPlayerRadarChartProperties();
     } 
-    }
-    
-    public void setPlayerRadarChartProperties() {
-        repaintPanel();
-    }
 
     public void repaintPanel() {
         this.repaint();
@@ -65,7 +59,7 @@ public class RadarChartPanel extends AbstractRadarChartPanel
 
             k++;
         }
-    
+        
         // Determine center point and radius of the chart
         int centerX = d.width / 2;
         int centerY = d.height / 2;
