@@ -3,59 +3,104 @@ package uk.ac.sheffield.com1003.assignment;
 import uk.ac.sheffield.com1003.assignment.codeprovided.*;
 import java.util.*;
 
-/**
- * SKELETON IMPLEMENTATION
- */
-public class QueryParser extends AbstractQueryParser
-{
+public class QueryParser extends AbstractQueryParser {
 
     @Override
     public List<Query> readQueries(List<String> queryTokens) throws IllegalArgumentException {
-    
-        List<Query> queryList = new ArrayList<>();
-        for(String keyword:queryTokens){
-            
+        List<Query> queries = new ArrayList<>();
+        List<List<String>> QueryList = divideQueries(queryTokens);
+        
+        for (List<String> query : QueryList) {
+            queries.add(readQuery(query));
         }
-        // if(queryTokens != null){
-        //     int i = 0;
-        //     while (i < queryTokens.size()) {
-        //         String league = queryTokens.get(i++).toUpperCase();
-        //         League leagueType = League.fromName(league);
+        return queries;
+    }
+
+    // Reads a query and returns a Query object
+    public Query readQuery(List<String> queryTokens) throws IllegalArgumentException {
+        League league = null;
+        List<SubQuery> subQueries = new ArrayList<>();
     
-        //         List<SubQuery> subQueryList = new ArrayList<>();
+        Iterator<String> iterator = queryTokens.iterator();
+        while (iterator.hasNext()) {
+            String token = iterator.next();
     
-        //         while (i < queryTokens.size() && !"WHERE".equals(queryTokens.get(i).toUpperCase())) {
-        //             String property = queryTokens.get(i++);
-        //             String operator = queryTokens.get(i++);
-        //             String valueStr = queryTokens.get(i++);
+            switch (token) {
+                case "select":
+                    if (iterator.hasNext()) {
+                        String leagueName = iterator.next();
+                        league = getLeagueType(leagueName);
+                    }
+                    break;
+                case "or":
+                    if (iterator.hasNext()) {
+                        iterator.next();
+                        league = getLeagueType("all");
+                    }
+                    break;
+                case "where":
+                    subQueries = new ArrayList<>();
+                    while (iterator.hasNext()) {
+                        String property = iterator.next();
+                        String operator = iterator.next();
+                        double value = Double.parseDouble(iterator.next());
     
-        //             // Attempt to parse the value into a double, with error handling
-        //             double value = Double.NaN;
-        //             try {
-        //                 value = Double.parseDouble(valueStr);
-        //             } catch (NumberFormatException e) {
-        //                 System.err.println("Error parsing value: " + valueStr);
-        //                 continue;
-        //             }
+                        if (!SubQuery.isValidOperator(operator)) {
+                            throw new IllegalArgumentException("Unexpected operator: " + operator);
+                        }
     
-        //             subQueryList.add(new SubQuery(PlayerProperty.valueOf(property.toUpperCase()), operator, value));
-        //         }
-    /*
-     * ["select", "epl", "where", "goals", ">", "2",
-     *  "select", "epl", "or", "liga", "where", "goals", ">", "2", "and", "goals", "<", "5", "and", "assists", ">", "0.1",
-     *  "select", "epl", "where", "matches", "!=", "2", "and", "matches", "!=", "4", "and", "matches", "!=", "6", "and", "pkattempts", ">", "0",
-     *  "select", "epl", "or", "liga", "where", "goals", ">", "5", "and", "goals", "<=", "6", "and", "minutes", ">=", "1245", 
-     * "select", "liga", "where", "goals", "=", "12", "and", "owngoals", ">", "0"]
-     */
-                // skip the "WHERE" token
-           // queryList.add(new Query(subQueryList, leagueType));
-                // i+  }
-        //}
+                        PlayerProperty playerProperty = PlayerProperty.fromName(property);
+                        if (playerProperty == null) {
+                            throw new IllegalArgumentException("Unexpected property: " + property);
+                        }
     
+                        SubQuery subQuery = new SubQuery(playerProperty, operator, value);
+                        subQueries.add(subQuery);
     
-        return queryList;
+                        if (!iterator.hasNext() || "and".equals(iterator.next())) {
+                            continue;
+                        }
+                    }
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unexpected token: " + token);
+            }
+        }
+    
+        return new Query(subQueries, league);
     }
     
-
+    // Returns the league type based on the given league string
+    public League getLeagueType(String league) {
+        League leagueType;
+    
+        if (league.equals("liga")) {
+            leagueType = League.LIGA;
+        } else if (league.equals("epl")) {
+            leagueType = League.EPL;
+        } else {
+            leagueType = League.ALL;
+        }
+    
+        return leagueType;
+    }
+    
+    // Divides a list of query tokens into separate lists for each query
+    public List<List<String>> divideQueries(List<String> queryTokens) {
+        List<List<String>> queries = new ArrayList<>();
+        List<String> currentQuery = new ArrayList<>();
+    
+        for (String token : queryTokens) {
+            if (token.equals("select")) {
+                if (!currentQuery.isEmpty()) {
+                    queries.add(currentQuery);
+                }
+                currentQuery = new ArrayList<>();
+            }
+            currentQuery.add(token);
+        }
+        queries.add(currentQuery);
+    
+        return queries;
+    }
 }
-
