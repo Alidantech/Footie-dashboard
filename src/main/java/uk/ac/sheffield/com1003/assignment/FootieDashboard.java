@@ -123,7 +123,7 @@ public class FootieDashboard {
 			System.out.println(query.toString() + ":");
 			List<PlayerEntry> queryResults = query.executeQuery(playerCatalog);
 			printPlayerEntries(queryResults);
-			System.out.println(queryResults);
+			//System.out.println(queryResults);
 		}
 	}
 

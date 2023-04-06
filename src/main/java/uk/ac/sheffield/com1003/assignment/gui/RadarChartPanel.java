@@ -151,7 +151,7 @@ public class RadarChartPanel extends AbstractRadarChartPanel {
         Color[] colorsLegends = {
             new Color(102, 153, 255), // blue with 75% transparency
             new Color(102, 255, 153), // green with 75% transparency
-            new Color(255, 102, 102, 191) // red with 75% transparency
+            new Color(255, 102, 102) // red with 75% transparency
         };
     
         Color[] polygonFillColors = {
