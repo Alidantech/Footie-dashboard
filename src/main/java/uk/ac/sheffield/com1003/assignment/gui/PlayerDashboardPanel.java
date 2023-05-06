@@ -173,11 +173,11 @@ public class PlayerDashboardPanel extends AbstractPlayerDashboardPanel
             if (e.getStateChange() == ItemEvent.SELECTED) {
                 maximumChecked = true;
               
-                System.out.println(maximumChecked);
+               
 
             } else{
                 maximumChecked = false;
-                System.out.println(maximumChecked);
+               
             }
             updateRadarChart();
         });

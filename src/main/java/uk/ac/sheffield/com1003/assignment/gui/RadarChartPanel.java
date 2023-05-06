@@ -129,7 +129,6 @@ public class RadarChartPanel extends AbstractRadarChartPanel {
 
     //updates the data
     private static void updateData() {
-       System.out.println("updated radar chart");
         // Initialize the labels and data arrays
        labels = new String[map.size()];
        data = new double[3][map.size()];
